@@ -7,6 +7,12 @@
     "name": "afeiship",
     "email": "1290657123@qq.com"
   },
+  "scripts": {
+    "start": "docker-compose up",
+    "start-d": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "restart": "docker-compose restart"
+  },
   "license": "MIT",
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
