@@ -12,6 +12,10 @@ npm run config:init
 
 # 启动 
 npm run start-d
+
+# to docker test mysql
+docker exec -it mysqllocal bash
+mysql -uroot -p -h 127.0.0.1 -P 3306
 ```
 
 ## command
