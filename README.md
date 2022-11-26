@@ -1,6 +1,19 @@
 # docker-mysql
 > Docker for mysq@57.
 
+## installation
+```shell
+# 安装
+git clone git@github.com:afeiship/docker-mysql.git
+cd docker-mysql
+
+# 配置 - 修改密码等
+npm run config:init
+
+# 启动 
+npm run start-d
+```
+
 ## command
 ```shell
 # login
