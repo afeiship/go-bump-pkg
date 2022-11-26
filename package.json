@@ -18,6 +18,7 @@
     "url": "https://github.com/afeiship/docker-mysql.git"
   },
   "scripts": {
+    "config:init": "cp docker-compose.sample.yml docker-compose.yml",
     "start": "docker-compose up",
     "start-d": "docker-compose up -d",
     "stop": "docker-compose down",
