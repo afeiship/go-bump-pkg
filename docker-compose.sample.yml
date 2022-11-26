@@ -3,10 +3,10 @@ services:
   db:
     image: 'mysql:5.7'
     restart: always
+    container_name: mysqllocal
     environment:
       MYSQL_ROOT_PASSWORD: 98LNaNmPjJbesmEI
-    command:
-      --default-authentication-plugin=mysql_native_password
+    command: --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_general_ci
       --explicit_defaults_for_timestamp=true
