@@ -1,15 +1,16 @@
-package bumppkg
+package bumppkg__test
 
 import (
 	"encoding/json"
+	bumppkg "github.com/afeiship/go-bump-pkg"
 	"os"
 	"testing"
 )
 
-const testFile = "./__tests__/test_package.json"
+const testFile = "./test_package.json"
 
 func setupTestFile(t *testing.T) {
-	pkg := PkgJson{
+	pkg := bumppkg.PkgJson{
 		Name:        "test-package",
 		Version:     "1.2.3",
 		Description: "Test package",
@@ -38,7 +39,7 @@ func TestReadPkgJson(t *testing.T) {
 	setupTestFile(t)
 	defer cleanupTestFile(t)
 
-	pkg, err := ReadPkgJson(testFile)
+	pkg, err := bumppkg.ReadPkgJson(testFile)
 	if err != nil {
 		t.Fatalf("Failed to read package.json: %v", err)
 	}
@@ -55,11 +56,11 @@ func TestBumpMajor(t *testing.T) {
 	setupTestFile(t)
 	defer cleanupTestFile(t)
 
-	if err := BumpMajor(testFile); err != nil {
+	if err := bumppkg.BumpMajor(testFile); err != nil {
 		t.Fatalf("Failed to bump major version: %v", err)
 	}
 
-	pkg, err := ReadPkgJson(testFile)
+	pkg, err := bumppkg.ReadPkgJson(testFile)
 	if err != nil {
 		t.Fatalf("Failed to read package.json after bump: %v", err)
 	}
@@ -73,11 +74,11 @@ func TestBumpMinor(t *testing.T) {
 	setupTestFile(t)
 	defer cleanupTestFile(t)
 
-	if err := BumpMinor(testFile); err != nil {
+	if err := bumppkg.BumpMinor(testFile); err != nil {
 		t.Fatalf("Failed to bump minor version: %v", err)
 	}
 
-	pkg, err := ReadPkgJson(testFile)
+	pkg, err := bumppkg.ReadPkgJson(testFile)
 	if err != nil {
 		t.Fatalf("Failed to read package.json after bump: %v", err)
 	}
@@ -91,11 +92,11 @@ func TestBumpPatch(t *testing.T) {
 	setupTestFile(t)
 	defer cleanupTestFile(t)
 
-	if err := BumpPatch(testFile); err != nil {
+	if err := bumppkg.BumpPatch(testFile); err != nil {
 		t.Fatalf("Failed to bump patch version: %v", err)
 	}
 
-	pkg, err := ReadPkgJson(testFile)
+	pkg, err := bumppkg.ReadPkgJson(testFile)
 	if err != nil {
 		t.Fatalf("Failed to read package.json after bump: %v", err)
 	}
