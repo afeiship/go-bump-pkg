@@ -8,6 +8,15 @@ import (
 	"strings"
 )
 
+type BumpType string
+
+// bump type enums
+const (
+	Major BumpType = "major"
+	Minor BumpType = "minor"
+	Patch BumpType = "patch"
+)
+
 // PkgJson represents the structure of a package.json file
 // Example:
 //
@@ -68,6 +77,28 @@ func formatVersion(major, minor, patch int, preRelease string) string {
 		version = fmt.Sprintf("%s-%s", version, preRelease)
 	}
 	return version
+}
+
+// BumpBy increments the version number by the specified bump type
+//
+// Example:
+//
+//		err := BumpBy("package.json", Major)
+//		// Version will be "2.0.0"
+//		err := BumpBy("package.json", Minor)
+//		// Version will be "1.3.0"
+//	 err := BumpBy("package.json", Patch)
+func BumpBy(filename string, bumpType BumpType) error {
+	switch bumpType {
+	case Major:
+		return BumpMajor(filename)
+	case Minor:
+		return BumpMinor(filename)
+	case Patch:
+		return BumpPatch(filename)
+	default:
+		return fmt.Errorf("invalid bump type: %s", bumpType)
+	}
 }
 
 // BumpMajor increments the major version number and resets minor and patch to 0
