@@ -88,7 +88,7 @@ func formatVersion(major, minor, patch int, preRelease string) string {
 //		err := BumpBy("package.json", Minor)
 //		// Version will be "1.3.0"
 //	 err := BumpBy("package.json", Patch)
-func BumpBy(filename string, bumpType BumpType) error {
+func BumpBy(filename string, bumpType BumpType) (string, error) {
 	switch bumpType {
 	case Major:
 		return BumpMajor(filename)
@@ -97,7 +97,7 @@ func BumpBy(filename string, bumpType BumpType) error {
 	case Patch:
 		return BumpPatch(filename)
 	default:
-		return fmt.Errorf("invalid bump type: %s", bumpType)
+		return "", fmt.Errorf("invalid bump type: %s", bumpType)
 	}
 }
 
@@ -108,19 +108,22 @@ func BumpBy(filename string, bumpType BumpType) error {
 //	// If package.json has version "1.2.3"
 //	err := BumpMajor("package.json")
 //	// Version will be "2.0.0"
-func BumpMajor(filename string) error {
+func BumpMajor(filename string) (string, error) {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	major, _, _, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	pkg.Version = formatVersion(major+1, 0, 0, "")
-	return WritePkgJson(filename, pkg)
+	if err := WritePkgJson(filename, pkg); err != nil {
+		return "", err
+	}
+	return pkg.Version, nil
 }
 
 // BumpMinor increments the minor version number and resets patch to 0
@@ -130,19 +133,22 @@ func BumpMajor(filename string) error {
 //	// If package.json has version "1.2.3"
 //	err := BumpMinor("package.json")
 //	// Version will be "1.3.0"
-func BumpMinor(filename string) error {
+func BumpMinor(filename string) (string, error) {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	major, minor, _, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	pkg.Version = formatVersion(major, minor+1, 0, "")
-	return WritePkgJson(filename, pkg)
+	if err := WritePkgJson(filename, pkg); err != nil {
+		return "", err
+	}
+	return pkg.Version, nil
 }
 
 // BumpPatch increments the patch version number
@@ -152,19 +158,22 @@ func BumpMinor(filename string) error {
 //	// If package.json has version "1.2.3"
 //	err := BumpPatch("package.json")
 //	// Version will be "1.2.4"
-func BumpPatch(filename string) error {
+func BumpPatch(filename string) (string, error) {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	major, minor, patch, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	pkg.Version = formatVersion(major, minor, patch+1, "")
-	return WritePkgJson(filename, pkg)
+	if err := WritePkgJson(filename, pkg); err != nil {
+		return "", err
+	}
+	return pkg.Version, nil
 }
 
 // AddPreRelease adds or updates the pre-release identifier
@@ -174,19 +183,22 @@ func BumpPatch(filename string) error {
 //	// If package.json has version "1.2.3"
 //	err := AddPreRelease("package.json", "beta")
 //	// Version will be "1.2.3-beta"
-func AddPreRelease(filename string, identifier string) error {
+func AddPreRelease(filename string, identifier string) (string, error) {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	major, minor, patch, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	pkg.Version = formatVersion(major, minor, patch, identifier)
-	return WritePkgJson(filename, pkg)
+	if err := WritePkgJson(filename, pkg); err != nil {
+		return "", err
+	}
+	return pkg.Version, nil
 }
 
 // RemovePreRelease removes the pre-release identifier
@@ -196,19 +208,22 @@ func AddPreRelease(filename string, identifier string) error {
 //	// If package.json has version "1.2.3-beta"
 //	err := RemovePreRelease("package.json")
 //	// Version will be "1.2.3"
-func RemovePreRelease(filename string) error {
+func RemovePreRelease(filename string) (string, error) {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	major, minor, patch, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	pkg.Version = formatVersion(major, minor, patch, "")
-	return WritePkgJson(filename, pkg)
+	if err := WritePkgJson(filename, pkg); err != nil {
+		return "", err
+	}
+	return pkg.Version, nil
 }
 
 // ReadPkgJson reads and parses a package.json file
