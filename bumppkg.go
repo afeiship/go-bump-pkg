@@ -270,3 +270,30 @@ func WritePkgJson(filename string, pkg *PkgJson) error {
 
 	return nil
 }
+
+// GetVersion retrieves the version string from a package.json file
+//
+// This function reads the specified package.json file and returns its version.
+// It's useful when you only need to check the current version without modifying it.
+//
+// Parameters:
+//   - filename: The path to the package.json file
+//
+// Returns:
+//   - string: The version string from the package.json file
+//   - error: An error if the file cannot be read or parsed
+//
+// Example:
+//
+//	version, err := GetVersion("package.json")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	fmt.Printf("Current version: %s\n", version)
+func GetVersion(filename string) (string, error) {
+	pkg, err := ReadPkgJson(filename)
+	if err != nil {
+		return "", err
+	}
+	return pkg.Version, nil
+}
