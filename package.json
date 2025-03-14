@@ -1,11 +1,18 @@
 {
   "name": "go-bump-pkg",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tools for bumping package.json or other version files.",
   "license": "MIT",
   "scripts": {
     "test": "go test __tests__/*.go -v",
     "release": "release-it"
-  }
+  },
+  "keywords": [
+    "bump",
+    "golang",
+    "package",
+    "pkg",
+    "version"
+  ]
 }
