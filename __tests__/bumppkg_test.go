@@ -56,8 +56,13 @@ func TestBumpMajor(t *testing.T) {
 	setupTestFile(t)
 	defer cleanupTestFile(t)
 
-	if err := bumppkg.BumpMajor(testFile); err != nil {
+	version, err := bumppkg.BumpMajor(testFile)
+	if err != nil {
 		t.Fatalf("Failed to bump major version: %v", err)
+	}
+
+	if version != "2.0.0" {
+		t.Errorf("Expected version '2.0.0', got '%s'", version)
 	}
 
 	pkg, err := bumppkg.ReadPkgJson(testFile)
@@ -65,8 +70,8 @@ func TestBumpMajor(t *testing.T) {
 		t.Fatalf("Failed to read package.json after bump: %v", err)
 	}
 
-	if pkg.Version != "2.0.0" {
-		t.Errorf("Expected version '2.0.0', got '%s'", pkg.Version)
+	if pkg.Version != version {
+		t.Errorf("File version '%s' does not match returned version '%s'", pkg.Version, version)
 	}
 }
 
@@ -74,8 +79,13 @@ func TestBumpMinor(t *testing.T) {
 	setupTestFile(t)
 	defer cleanupTestFile(t)
 
-	if err := bumppkg.BumpMinor(testFile); err != nil {
+	version, err := bumppkg.BumpMinor(testFile)
+	if err != nil {
 		t.Fatalf("Failed to bump minor version: %v", err)
+	}
+
+	if version != "1.3.0" {
+		t.Errorf("Expected version '1.3.0', got '%s'", version)
 	}
 
 	pkg, err := bumppkg.ReadPkgJson(testFile)
@@ -83,8 +93,8 @@ func TestBumpMinor(t *testing.T) {
 		t.Fatalf("Failed to read package.json after bump: %v", err)
 	}
 
-	if pkg.Version != "1.3.0" {
-		t.Errorf("Expected version '1.3.0', got '%s'", pkg.Version)
+	if pkg.Version != version {
+		t.Errorf("File version '%s' does not match returned version '%s'", pkg.Version, version)
 	}
 }
 
@@ -92,8 +102,13 @@ func TestBumpPatch(t *testing.T) {
 	setupTestFile(t)
 	defer cleanupTestFile(t)
 
-	if err := bumppkg.BumpPatch(testFile); err != nil {
+	version, err := bumppkg.BumpPatch(testFile)
+	if err != nil {
 		t.Fatalf("Failed to bump patch version: %v", err)
+	}
+
+	if version != "1.2.4" {
+		t.Errorf("Expected version '1.2.4', got '%s'", version)
 	}
 
 	pkg, err := bumppkg.ReadPkgJson(testFile)
@@ -101,8 +116,8 @@ func TestBumpPatch(t *testing.T) {
 		t.Fatalf("Failed to read package.json after bump: %v", err)
 	}
 
-	if pkg.Version != "1.2.4" {
-		t.Errorf("Expected version '1.2.4', got '%s'", pkg.Version)
+	if pkg.Version != version {
+		t.Errorf("File version '%s' does not match returned version '%s'", pkg.Version, version)
 	}
 }
 
@@ -110,8 +125,13 @@ func TestAddPreRelease(t *testing.T) {
 	setupTestFile(t)
 	defer cleanupTestFile(t)
 
-	if err := bumppkg.AddPreRelease(testFile, "beta"); err != nil {
+	version, err := bumppkg.AddPreRelease(testFile, "beta")
+	if err != nil {
 		t.Fatalf("Failed to add pre-release identifier: %v", err)
+	}
+
+	if version != "1.2.3-beta" {
+		t.Errorf("Expected version '1.2.3-beta', got '%s'", version)
 	}
 
 	pkg, err := bumppkg.ReadPkgJson(testFile)
@@ -119,8 +139,8 @@ func TestAddPreRelease(t *testing.T) {
 		t.Fatalf("Failed to read package.json after adding pre-release: %v", err)
 	}
 
-	if pkg.Version != "1.2.3-beta" {
-		t.Errorf("Expected version '1.2.3-beta', got '%s'", pkg.Version)
+	if pkg.Version != version {
+		t.Errorf("File version '%s' does not match returned version '%s'", pkg.Version, version)
 	}
 }
 
@@ -129,13 +149,19 @@ func TestRemovePreRelease(t *testing.T) {
 	defer cleanupTestFile(t)
 
 	// First add a pre-release identifier
-	if err := bumppkg.AddPreRelease(testFile, "beta"); err != nil {
+	version, err := bumppkg.AddPreRelease(testFile, "beta")
+	if err != nil {
 		t.Fatalf("Failed to add pre-release identifier: %v", err)
 	}
 
 	// Then remove it
-	if err := bumppkg.RemovePreRelease(testFile); err != nil {
+	version, err = bumppkg.RemovePreRelease(testFile)
+	if err != nil {
 		t.Fatalf("Failed to remove pre-release identifier: %v", err)
+	}
+
+	if version != "1.2.3" {
+		t.Errorf("Expected version '1.2.3', got '%s'", version)
 	}
 
 	pkg, err := bumppkg.ReadPkgJson(testFile)
@@ -143,8 +169,8 @@ func TestRemovePreRelease(t *testing.T) {
 		t.Fatalf("Failed to read package.json after removing pre-release: %v", err)
 	}
 
-	if pkg.Version != "1.2.3" {
-		t.Errorf("Expected version '1.2.3', got '%s'", pkg.Version)
+	if pkg.Version != version {
+		t.Errorf("File version '%s' does not match returned version '%s'", pkg.Version, version)
 	}
 }
 
@@ -153,13 +179,19 @@ func TestBumpWithPreRelease(t *testing.T) {
 	defer cleanupTestFile(t)
 
 	// Add pre-release identifier
-	if err := bumppkg.AddPreRelease(testFile, "beta"); err != nil {
+	version, err := bumppkg.AddPreRelease(testFile, "beta")
+	if err != nil {
 		t.Fatalf("Failed to add pre-release identifier: %v", err)
 	}
 
 	// Bump patch version
-	if err := bumppkg.BumpPatch(testFile); err != nil {
+	version, err = bumppkg.BumpPatch(testFile)
+	if err != nil {
 		t.Fatalf("Failed to bump patch version: %v", err)
+	}
+
+	if version != "1.2.4" {
+		t.Errorf("Expected version '1.2.4', got '%s'", version)
 	}
 
 	pkg, err := bumppkg.ReadPkgJson(testFile)
@@ -167,7 +199,7 @@ func TestBumpWithPreRelease(t *testing.T) {
 		t.Fatalf("Failed to read package.json after bump: %v", err)
 	}
 
-	if pkg.Version != "1.2.4" {
-		t.Errorf("Expected version '1.2.4', got '%s'", pkg.Version)
+	if pkg.Version != version {
+		t.Errorf("File version '%s' does not match returned version '%s'", pkg.Version, version)
 	}
 }
