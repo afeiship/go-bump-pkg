@@ -1,27 +1,11 @@
 {
-  "name": "@jswork/docker-mysql",
+  "name": "go-bump-pkg",
+  "private": true,
   "version": "1.0.0",
-  "description": "Docker for mysq@57.",
-  "homepage": "https://js.work",
-  "author": {
-    "name": "afeiship",
-    "email": "1290657123@qq.com"
-  },
+  "description": "A tools for bumping package.json or other version files.",
   "license": "MIT",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org",
-    "access": "public"
-  },
-  "boilerplate": "docker-mysql",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/afeiship/docker-mysql.git"
-  },
   "scripts": {
-    "config:init": "cp docker-compose.sample.yml docker-compose.yml",
-    "start": "docker-compose up",
-    "start-d": "docker-compose up -d",
-    "stop": "docker-compose down",
-    "restart": "docker-compose restart"
+    "test": "go test __tests__/*.go -v",
+    "release": "release-it"
   }
 }
