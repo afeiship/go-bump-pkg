@@ -105,3 +105,69 @@ func TestBumpPatch(t *testing.T) {
 		t.Errorf("Expected version '1.2.4', got '%s'", pkg.Version)
 	}
 }
+
+func TestAddPreRelease(t *testing.T) {
+	setupTestFile(t)
+	defer cleanupTestFile(t)
+
+	if err := bumppkg.AddPreRelease(testFile, "beta"); err != nil {
+		t.Fatalf("Failed to add pre-release identifier: %v", err)
+	}
+
+	pkg, err := bumppkg.ReadPkgJson(testFile)
+	if err != nil {
+		t.Fatalf("Failed to read package.json after adding pre-release: %v", err)
+	}
+
+	if pkg.Version != "1.2.3-beta" {
+		t.Errorf("Expected version '1.2.3-beta', got '%s'", pkg.Version)
+	}
+}
+
+func TestRemovePreRelease(t *testing.T) {
+	setupTestFile(t)
+	defer cleanupTestFile(t)
+
+	// First add a pre-release identifier
+	if err := bumppkg.AddPreRelease(testFile, "beta"); err != nil {
+		t.Fatalf("Failed to add pre-release identifier: %v", err)
+	}
+
+	// Then remove it
+	if err := bumppkg.RemovePreRelease(testFile); err != nil {
+		t.Fatalf("Failed to remove pre-release identifier: %v", err)
+	}
+
+	pkg, err := bumppkg.ReadPkgJson(testFile)
+	if err != nil {
+		t.Fatalf("Failed to read package.json after removing pre-release: %v", err)
+	}
+
+	if pkg.Version != "1.2.3" {
+		t.Errorf("Expected version '1.2.3', got '%s'", pkg.Version)
+	}
+}
+
+func TestBumpWithPreRelease(t *testing.T) {
+	setupTestFile(t)
+	defer cleanupTestFile(t)
+
+	// Add pre-release identifier
+	if err := bumppkg.AddPreRelease(testFile, "beta"); err != nil {
+		t.Fatalf("Failed to add pre-release identifier: %v", err)
+	}
+
+	// Bump patch version
+	if err := bumppkg.BumpPatch(testFile); err != nil {
+		t.Fatalf("Failed to bump patch version: %v", err)
+	}
+
+	pkg, err := bumppkg.ReadPkgJson(testFile)
+	if err != nil {
+		t.Fatalf("Failed to read package.json after bump: %v", err)
+	}
+
+	if pkg.Version != "1.2.4" {
+		t.Errorf("Expected version '1.2.4', got '%s'", pkg.Version)
+	}
+}

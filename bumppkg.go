@@ -18,6 +18,48 @@ type PkgJson struct {
 	Scripts     map[string]string `json:"scripts"`
 }
 
+// parseVersion splits a version string into its components
+func parseVersion(version string) (major, minor, patch int, preRelease string, err error) {
+	// Split version into main part and pre-release part
+	parts := strings.SplitN(version, "-", 2)
+	mainVersion := parts[0]
+	if len(parts) > 1 {
+		preRelease = parts[1]
+	}
+
+	// Split main version into major.minor.patch
+	versionParts := strings.Split(mainVersion, ".")
+	if len(versionParts) != 3 {
+		return 0, 0, 0, "", fmt.Errorf("invalid version format: %s", version)
+	}
+
+	major, err = strconv.Atoi(versionParts[0])
+	if err != nil {
+		return 0, 0, 0, "", fmt.Errorf("invalid major version: %s", versionParts[0])
+	}
+
+	minor, err = strconv.Atoi(versionParts[1])
+	if err != nil {
+		return 0, 0, 0, "", fmt.Errorf("invalid minor version: %s", versionParts[1])
+	}
+
+	patch, err = strconv.Atoi(versionParts[2])
+	if err != nil {
+		return 0, 0, 0, "", fmt.Errorf("invalid patch version: %s", versionParts[2])
+	}
+
+	return major, minor, patch, preRelease, nil
+}
+
+// formatVersion formats version components into a version string
+func formatVersion(major, minor, patch int, preRelease string) string {
+	version := fmt.Sprintf("%d.%d.%d", major, minor, patch)
+	if preRelease != "" {
+		version = fmt.Sprintf("%s-%s", version, preRelease)
+	}
+	return version
+}
+
 // BumpMajor increments the major version number and resets minor and patch to 0
 func BumpMajor(filename string) error {
 	pkg, err := ReadPkgJson(filename)
@@ -25,17 +67,12 @@ func BumpMajor(filename string) error {
 		return err
 	}
 
-	parts := strings.Split(pkg.Version, ".")
-	if len(parts) != 3 {
-		return fmt.Errorf("invalid version format: %s", pkg.Version)
-	}
-
-	major, err := strconv.Atoi(parts[0])
+	major, _, _, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return fmt.Errorf("invalid major version: %s", parts[0])
+		return err
 	}
 
-	pkg.Version = fmt.Sprintf("%d.0.0", major+1)
+	pkg.Version = formatVersion(major+1, 0, 0, "")
 	return WritePkgJson(filename, pkg)
 }
 
@@ -46,22 +83,12 @@ func BumpMinor(filename string) error {
 		return err
 	}
 
-	parts := strings.Split(pkg.Version, ".")
-	if len(parts) != 3 {
-		return fmt.Errorf("invalid version format: %s", pkg.Version)
-	}
-
-	major, err := strconv.Atoi(parts[0])
+	major, minor, _, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return fmt.Errorf("invalid major version: %s", parts[0])
+		return err
 	}
 
-	minor, err := strconv.Atoi(parts[1])
-	if err != nil {
-		return fmt.Errorf("invalid minor version: %s", parts[1])
-	}
-
-	pkg.Version = fmt.Sprintf("%d.%d.0", major, minor+1)
+	pkg.Version = formatVersion(major, minor+1, 0, "")
 	return WritePkgJson(filename, pkg)
 }
 
@@ -72,27 +99,44 @@ func BumpPatch(filename string) error {
 		return err
 	}
 
-	parts := strings.Split(pkg.Version, ".")
-	if len(parts) != 3 {
-		return fmt.Errorf("invalid version format: %s", pkg.Version)
-	}
-
-	major, err := strconv.Atoi(parts[0])
+	major, minor, patch, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return fmt.Errorf("invalid major version: %s", parts[0])
+		return err
 	}
 
-	minor, err := strconv.Atoi(parts[1])
+	pkg.Version = formatVersion(major, minor, patch+1, "")
+	return WritePkgJson(filename, pkg)
+}
+
+// AddPreRelease adds or updates the pre-release identifier
+func AddPreRelease(filename string, identifier string) error {
+	pkg, err := ReadPkgJson(filename)
 	if err != nil {
-		return fmt.Errorf("invalid minor version: %s", parts[1])
+		return err
 	}
 
-	patch, err := strconv.Atoi(parts[2])
+	major, minor, patch, _, err := parseVersion(pkg.Version)
 	if err != nil {
-		return fmt.Errorf("invalid patch version: %s", parts[2])
+		return err
 	}
 
-	pkg.Version = fmt.Sprintf("%d.%d.%d", major, minor, patch+1)
+	pkg.Version = formatVersion(major, minor, patch, identifier)
+	return WritePkgJson(filename, pkg)
+}
+
+// RemovePreRelease removes the pre-release identifier
+func RemovePreRelease(filename string) error {
+	pkg, err := ReadPkgJson(filename)
+	if err != nil {
+		return err
+	}
+
+	major, minor, patch, _, err := parseVersion(pkg.Version)
+	if err != nil {
+		return err
+	}
+
+	pkg.Version = formatVersion(major, minor, patch, "")
 	return WritePkgJson(filename, pkg)
 }
 
