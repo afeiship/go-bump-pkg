@@ -9,6 +9,16 @@ import (
 )
 
 // PkgJson represents the structure of a package.json file
+// Example:
+//
+//	pkg := PkgJson{
+//		Name: "my-package",
+//		Version: "1.0.0",
+//		Description: "My awesome package",
+//		Private: false,
+//		License: "MIT",
+//		Scripts: map[string]string{"test": "go test"},
+//	}
 type PkgJson struct {
 	Name        string            `json:"name"`
 	Version     string            `json:"version"`
@@ -61,6 +71,12 @@ func formatVersion(major, minor, patch int, preRelease string) string {
 }
 
 // BumpMajor increments the major version number and resets minor and patch to 0
+//
+// Example:
+//
+//	// If package.json has version "1.2.3"
+//	err := BumpMajor("package.json")
+//	// Version will be "2.0.0"
 func BumpMajor(filename string) error {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
@@ -77,6 +93,12 @@ func BumpMajor(filename string) error {
 }
 
 // BumpMinor increments the minor version number and resets patch to 0
+//
+// Example:
+//
+//	// If package.json has version "1.2.3"
+//	err := BumpMinor("package.json")
+//	// Version will be "1.3.0"
 func BumpMinor(filename string) error {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
@@ -93,6 +115,12 @@ func BumpMinor(filename string) error {
 }
 
 // BumpPatch increments the patch version number
+//
+// Example:
+//
+//	// If package.json has version "1.2.3"
+//	err := BumpPatch("package.json")
+//	// Version will be "1.2.4"
 func BumpPatch(filename string) error {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
@@ -109,6 +137,12 @@ func BumpPatch(filename string) error {
 }
 
 // AddPreRelease adds or updates the pre-release identifier
+//
+// Example:
+//
+//	// If package.json has version "1.2.3"
+//	err := AddPreRelease("package.json", "beta")
+//	// Version will be "1.2.3-beta"
 func AddPreRelease(filename string, identifier string) error {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
@@ -125,6 +159,12 @@ func AddPreRelease(filename string, identifier string) error {
 }
 
 // RemovePreRelease removes the pre-release identifier
+//
+// Example:
+//
+//	// If package.json has version "1.2.3-beta"
+//	err := RemovePreRelease("package.json")
+//	// Version will be "1.2.3"
 func RemovePreRelease(filename string) error {
 	pkg, err := ReadPkgJson(filename)
 	if err != nil {
@@ -141,6 +181,14 @@ func RemovePreRelease(filename string) error {
 }
 
 // ReadPkgJson reads and parses a package.json file
+//
+// Example:
+//
+//	pkg, err := ReadPkgJson("package.json")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	fmt.Printf("Current version: %s\n", pkg.Version)
 func ReadPkgJson(filename string) (*PkgJson, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -156,6 +204,14 @@ func ReadPkgJson(filename string) (*PkgJson, error) {
 }
 
 // WritePkgJson writes the package.json content back to file
+//
+// Example:
+//
+//	pkg := &PkgJson{
+//		Name: "my-package",
+//		Version: "1.0.0",
+//	}
+//	err := WritePkgJson("package.json", pkg)
 func WritePkgJson(filename string, pkg *PkgJson) error {
 	data, err := json.MarshalIndent(pkg, "", "  ")
 	if err != nil {
