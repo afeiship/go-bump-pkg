@@ -6,6 +6,15 @@
 go get -u github.com/afeiship/go-bump-pkg
 ```
 
+## methods
+- `ReadPkgJson(filePath string) (pkg *bumppkg.Package, err error)` - Read package.json file and return a `Package` object.
+- `BumpMajor(filePath string) error` - Bump major version.
+- `BumpMinor(filePath string) error` - Bump minor version.
+- `BumpPatch(filePath string) error` - Bump patch version.
+- `AddPreRelease(filePath string, preRelease string) error` - Add pre-release identifier.
+- `RemovePreRelease(filePath string) error` - Remove pre-release identifier.
+- `GetVersion(filePath string) (version string, err error)` - Get version from package.json file.
+
 ## usage
 ```go
 package main
@@ -48,5 +57,10 @@ func main() {
     if err := bumppkg.RemovePreRelease("package.json"); err != nil {
         log.Fatal(err)
     }
+	
+	// get version
+	version, err := bumppkg.GetVersion("package.json")
+	if err != nil { log.Fatal(err) }
+	fmt.Printf("Version: %s\n", version)
 }
 ```
